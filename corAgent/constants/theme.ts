@@ -8,24 +8,32 @@ import { Platform } from 'react-native';
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+export const colors = {
+  background: "#FFF9F6",
+  foreground: "#2F2840",
+  border: "#00000014",
+  primary: "#5B4B7A",
+  secondary: "#FFE6D9",
+  mutedForeground: "#9A8F98",
+  card: "#FFFFFF",
+  cardForeground: "#2F2840"
 };
+
+export const radius = {
+  sm: 4,
+  md: 6,
+  lg: 8,
+  xl: 12
+};
+
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24
+};
+
 
 export const Fonts = Platform.select({
   ios: {

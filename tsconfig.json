@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "tailwind.config": [
+        "./tailwind.config.js"
+      ]
+    },
+    "jsxImportSource": "nativewind"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
