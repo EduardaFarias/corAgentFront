@@ -5,7 +5,7 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
-        name="home"
+        name="homee"
         options={{
           title: "Início",
           tabBarIcon: ({ color, size }) => (
