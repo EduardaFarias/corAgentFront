@@ -5,7 +5,7 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
-        name="homee"
+        name="home"
         options={{
           title: "Início",
           tabBarIcon: ({ color, size }) => (
@@ -14,25 +14,6 @@ export default function TabsLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: "Histórico",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="time-outline" size={size} color={color} />
-          )
-        }}
-      />
-
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Perfil",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          )
-        }}
-      />
     </Tabs>
   );
 }
