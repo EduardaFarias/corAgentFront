@@ -1,4 +1,5 @@
-import { Tabs } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
+import { Tabs, useRouter } from 'expo-router';
 import {
   Apple,
   BarChart3,
@@ -6,7 +7,7 @@ import {
   ChevronRight,
   Eye,
   History,
-  Home,
+  HomeIcon,
   Shirt,
   ShoppingBag,
   User
@@ -30,6 +31,7 @@ const { width } = Dimensions.get('window');
 interface AgentCardProps {
   icon: React.ReactNode;
   name: string;
+  onPress?:() => void;
 }
 
 interface NavItemProps {
@@ -38,7 +40,8 @@ interface NavItemProps {
   active?: boolean;
 }
 
-const CorAgentApp = () => {
+const Home = () => {
+  const router = useRouter();
   return (
     // 2. O SafeAreaProvider deve envolver a aplicação (ou esta tela)
     <SafeAreaProvider>
@@ -72,22 +75,25 @@ const CorAgentApp = () => {
 
           <View>
             <View style={styles.row}>
-              <AgentCard icon={<Eye size={28} color="#5b4b7a" />} name="Agente Básico" />
-              <AgentCard icon={<Apple size={28} color="#5b4b7a" />} name="Agente Alimentar" />
+              <AgentCard icon={<Eye size={28} color="#5b4b7a" />} name="Agente Básico" onPress={() => router.push('./CameraAgenteBasicoScreen')}/>
+
+              <AgentCard icon={<Apple size={28} color="#5b4b7a" />} name="Agente Alimentar" onPress={() => router.push('./CameraAgenteAlimentarScreen')}/>
             </View>
 
             <View style={styles.row}>
-              <AgentCard icon={<Shirt size={28} color="#5b4b7a" />} name="Personal Stylist" />
-              <AgentCard icon={<BarChart3 size={28} color="#5b4b7a" />} name="Data Accessibility" />
+              <AgentCard icon={<Shirt size={28} color="#5b4b7a" />} name="Personal Stylist" onPress={() => router.push('./CameraAgenteStylistScreen')}/>
+
+              <AgentCard icon={<BarChart3 size={28} color="#5b4b7a" />} name="Acessibilidade para gráficos" 
+              onPress={() => router.push('./CameraAgenteDataScreen')}/>
             </View>
 
-            <TouchableOpacity style={styles.wideCard}>
+            <TouchableOpacity style={styles.wideCard} onPress={() => router.push('./CameraAgenteCosmeticsScreen')}>
               <View style={styles.iconContainer}>
                 <ShoppingBag size={28} color="#5b4b7a" />
               </View>
-              <View style={styles.wideCardTextContent}>
-                <Text style={styles.agentName}>Shopping Assistant</Text>
-                <Text style={styles.agentSubtext}>Ajuda para compras e rótulos</Text>
+              <View style={styles.wideCardTextContent} >
+                <Text style={styles.agentName}>Agente para cosméticos</Text>
+                <Text style={styles.agentSubtext}>Ajuda você a encontrar o tom de base e sombra ideal</Text>
               </View>
               <ChevronRight size={24} color="#9a8f98" />
             </TouchableOpacity>
@@ -96,7 +102,7 @@ const CorAgentApp = () => {
 
         {/* Bottom Nav */}
         <View style={styles.bottomNav}>
-          <NavItem icon={<Home size={24} />} label="Início" active />
+          <NavItem icon={<HomeIcon size={24} />} label="Início" active />
           <NavItem icon={<History size={24} />} label="Histórico" />
           <NavItem icon={<User size={24} />} label="Perfil" />
         </View>
@@ -107,15 +113,15 @@ const CorAgentApp = () => {
 
 // --- Sub-componentes mantidos com suas correções de Tipos ---
 
-const AgentCard = ({ icon, name }: AgentCardProps) => (
-  <TouchableOpacity style={styles.agentCard} activeOpacity={0.7}>
+const AgentCard = ({ icon, name, onPress }: AgentCardProps) => (
+  <TouchableOpacity style={styles.agentCard} activeOpacity={0.7} onPress={onPress}>
     <View style={styles.iconContainer}>{icon}</View>
     <Text style={styles.agentName}>{name}</Text>
   </TouchableOpacity>
 );
 
-const NavItem = ({ icon, label, active }: NavItemProps) => (
-  <TouchableOpacity style={styles.navItem} activeOpacity={0.7}>
+const NavItem = ({ icon, label, active, onPress }: any) => (
+  <TouchableOpacity style={styles.navItem} activeOpacity={0.7} onPress={onPress}>
     {React.isValidElement(icon) && React.cloneElement(icon, { color: active ? "#5b4b7a" : "#9a8f98" } as any)}
     <Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text>
   </TouchableOpacity>
@@ -259,4 +265,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CorAgentApp;
+export default Home;
