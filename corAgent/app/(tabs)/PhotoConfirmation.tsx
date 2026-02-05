@@ -29,8 +29,12 @@ const PhotoConfirmation = () => {
       pathname: '/ResultBasic', // Nome do arquivo que criamos acima
       params: { imageUri: finalUri }
     });
-  } else {
-    console.log("Vai ser outro agente");
+  } else if (currentAgent === 'food') {
+    // NÃO chama API aqui. Apenas navega enviando a foto.
+    router.push({
+      pathname: '/ResultFood',
+      params: { imageUri: finalUri }
+    });
   }
 };
   return (

@@ -10,13 +10,20 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Apple, Camera, ImagePlusIcon } from 'lucide-react-native';
+import { ArrowLeft, Apple, Camera, ImagePlus } from 'lucide-react-native'; // Corrigi ImagePlusIcon para ImagePlus (nome padrão)
 import { useRouter } from 'expo-router';
+
+// 1. IMPORTANTE: Importe o hook que controla a câmera
+import { useImagePicker } from '../../hooks/useImagePicker'; 
 
 const { width } = Dimensions.get('window');
 
 const CameraAgenteAlimentarScreen = () => {
   const router = useRouter();
+
+  // 2. IMPORTANTE: Inicialize o hook dizendo que este é o agente 'food'
+  // Isso garante que a navegação leve o 'agentType: food' para a próxima tela
+  const { takePhoto, pickImage } = useImagePicker('food');
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -51,6 +58,7 @@ const CameraAgenteAlimentarScreen = () => {
         {/* Main Illustration Card */}
         <View style={styles.card}>
           <Image
+           // Certifique-se que o caminho da imagem está correto no seu projeto
            source={require("../../assets/images/food-apple.png")}
             style={styles.illustration}
             resizeMode="contain"
@@ -58,27 +66,30 @@ const CameraAgenteAlimentarScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Footer Action Button */}
+      {/* Footer Action Buttons */}
+      {/* Juntei os dois botões em um único container footer para arrumar o layout */}
       <View style={styles.footer}>
+        
+        {/* Botão Câmera */}
         <TouchableOpacity 
           style={styles.actionButton}
           activeOpacity={0.9}
-          onPress={() => console.log('Abrir Câmera')}
+          onPress={takePhoto} // 3. Conectado aqui
         >
           <Camera size={24} color="#ffffff" />
           <Text style={styles.actionButtonText}>Tirar Foto</Text>
         </TouchableOpacity>
-      </View>
 
-      <View style={styles.footer}>
+        {/* Botão Galeria */}
         <TouchableOpacity 
-          style={styles.actionButton}
+          style={[styles.actionButton, styles.galleryButton]} // Adicionei um estilo extra se quiser diferenciar
           activeOpacity={0.9}
-          onPress={() => console.log('Abrir Câmera')}
+          onPress={pickImage} // 4. Conectado aqui
         >
-          <ImagePlusIcon size={24} color="#ffffff" />
-          <Text style={styles.actionButtonText}>Enviar Foto</Text>
+          <ImagePlus size={24} color="#ffffff" />
+          <Text style={styles.actionButtonText}>Enviar da Galeria</Text>
         </TouchableOpacity>
+        
       </View>
     </SafeAreaView>
   );
@@ -107,6 +118,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingTop: 10,
+    paddingBottom: 40, // Espaço extra para scroll não ficar preso no footer
   },
   iconBadge: {
     width: 80,
@@ -141,12 +153,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.03)',
-    // Shadow para iOS
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.03,
     shadowRadius: 10,
-    // Shadow para Android
     elevation: 2,
     marginBottom: 24,
   },
@@ -156,8 +166,9 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingBottom: 34,
     width: '100%',
+    gap: 16, // Espaço entre os botões
   },
   actionButton: {
     width: '100%',
@@ -168,6 +179,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
+  },
+  galleryButton: {
+    backgroundColor: '#8c7b99', // Uma cor ligeiramente diferente para diferenciar (opcional)
   },
   actionButtonText: {
     color: '#ffffff',

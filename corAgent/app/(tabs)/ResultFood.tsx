@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,20 +8,89 @@ import {
   ScrollView,
   StatusBar,
   Dimensions,
+  ActivityIndicator, // Importado para mostrar carregamento
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, MoreHorizontal, Volume2, Bookmark, Sparkles } from 'lucide-react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
-const { width } = Dimensions.get('window');
+// IMPORTE SEU SERVIÇO AQUI
+import { apiService } from '../../hooks/api'; 
 
 const ResultFood = () => {
+  const router = useRouter();
+  
+  // 1. Recebendo APENAS a imagem da tela anterior
+  const params = useLocalSearchParams();
+  const imageUri = params.imageUri as string; // Convertendo para string garantida
+
+  // 2. Estados para controlar a requisição
+  const [loading, setLoading] = useState(true);
+  const [foodData, setFoodData] = useState({
+    classification: 'Analisando...',
+    justification: 'Aguarde enquanto nossa IA verifica o alimento...'
+  });
+
+  // 3. Onde a mágica acontece: Chama a API assim que a tela abre
+  useEffect(() => {
+    const fetchAnalysis = async () => {
+      if (!imageUri) return;
+
+      try {
+        setLoading(true);
+        // Chama a função analyzeImage do seu arquivo api.ts
+        // Passamos 'food_quality' para cair no if correto do Python
+        const result = await apiService.analyzeImage(imageUri, 'food_quality');
+        
+        // Atualiza o estado com a resposta da Groq
+        setFoodData({
+          classification: result.classification || 'Indeterminado',
+          justification: result.justification || 'Sem detalhes disponíveis.'
+        });
+
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Erro", "Não foi possível conectar ao servidor de análise.");
+        setFoodData({
+          classification: 'Erro',
+          justification: 'Falha na conexão. Verifique sua internet ou o servidor.'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalysis();
+  }, [imageUri]); // Executa toda vez que imageUri mudar (ou seja, ao abrir a tela)
+
+  // 4. Lógica de Cores (agora olhando para foodData)
+  const statusColor = useMemo(() => {
+    if (loading) return '#6b7280'; // Cinza enquanto carrega
+    const text = foodData.classification.toLowerCase();
+    if (text.includes('imprópria') || text.includes('ruim')) return '#ef4444'; 
+    if (text.includes('regular')) return '#f59e0b'; 
+    return '#1b6a3a'; 
+  }, [foodData.classification, loading]);
+
+  const statusBgColor = useMemo(() => {
+    if (loading) return '#f3f4f6';
+    const text = foodData.classification.toLowerCase();
+    if (text.includes('imprópria') || text.includes('ruim')) return '#fee2e2';
+    if (text.includes('regular')) return '#fef3c7';
+    return '#dff3e1';
+  }, [foodData.classification, loading]);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fef9f6" />
       
-      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.headerIconBtn} activeOpacity={0.7}>
+        <TouchableOpacity 
+          style={styles.headerIconBtn} 
+          activeOpacity={0.7}
+          onPress={() => router.back()}
+        >
           <ChevronLeft size={24} color="#3c3350" />
         </TouchableOpacity>
         
@@ -37,55 +106,69 @@ const ResultFood = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Photo Area */}
         <View style={styles.photoArea}>
           <View style={styles.photoFrame}>
             <Image
-              source={{ uri: 'https://storage.googleapis.com/banani-generated-images/generated-images/1a6271a4-9fdc-4fe0-ab86-b49f2fde0a45.jpg' }}
+              source={{ uri: imageUri || 'https://via.placeholder.com/400' }}
               style={styles.analyzedImage}
               resizeMode="cover"
             />
+            {/* Overlay de carregamento sobre a imagem (opcional) */}
+            {loading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size="large" color="#4a3f63" />
+              </View>
+            )}
           </View>
         </View>
 
-        {/* Bottom Panel (Simulado como parte do Scroll para melhor UX mobile) */}
         <View style={styles.bottomPanel}>
           <View style={styles.dragHandle} />
 
-          <View style={styles.titleRow}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.resultTitle}>Banana - Madura</Text>
-              <Text style={styles.subtitle}>Análise detalhada pronta para você</Text>
+          {/* Se estiver carregando, mostramos um indicador. Se não, mostramos os dados */}
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <Text style={styles.loadingText}>Processando imagem...</Text>
+              <ActivityIndicator size="small" color="#3c3350" style={{marginTop: 8}}/>
             </View>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>Excelente para consumo</Text>
-            </View>
-          </View>
+          ) : (
+            <>
+              <View style={styles.titleRow}>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.resultTitle}>Qualidade do Alimento</Text>
+                  <Text style={styles.subtitle}>Análise via Groq AI</Text>
+                </View>
+                <View style={[styles.badge, { backgroundColor: statusBgColor }]}>
+                  <Text style={[styles.badgeText, { color: statusColor }]}>
+                    {foodData.classification}
+                  </Text>
+                </View>
+              </View>
 
-          <Text style={styles.descriptionText}>
-            A casca apresenta cor amarelo-ouro com pequenas manchas marrons,
-            indicando doçura ideal e textura macia, perfeita para consumo
-            imediato.
-          </Text>
+              <Text style={styles.descriptionText}>
+                {foodData.justification}
+              </Text>
 
-          <View style={styles.actionsRow}>
-            <TouchableOpacity style={styles.btnActionPrimary} activeOpacity={0.8}>
-              <Volume2 size={20} color="#ffffff" />
-              <Text style={styles.btnTextPrimary}>Ler em voz alta</Text>
-            </TouchableOpacity>
+              <View style={styles.actionsRow}>
+                <TouchableOpacity style={styles.btnActionPrimary} activeOpacity={0.8}>
+                  <Volume2 size={20} color="#ffffff" />
+                  <Text style={styles.btnTextPrimary}>Ler em voz alta</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.btnActionSecondary} activeOpacity={0.8}>
-              <Bookmark size={18} color="#3c3350" />
-              <Text style={styles.btnTextSecondary}>Salvar</Text>
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity style={styles.btnActionSecondary} activeOpacity={0.8}>
+                  <Bookmark size={18} color="#3c3350" />
+                  <Text style={styles.btnTextSecondary}>Salvar</Text>
+                </TouchableOpacity>
+              </View>
 
-          <View style={styles.infoRow}>
-            <Sparkles size={16} color="#f2b89a" />
-            <Text style={styles.infoText}>
-              Gerado com apoio de IA para leitura mais acessível e inclusiva.
-            </Text>
-          </View>
+              <View style={styles.infoRow}>
+                <Sparkles size={16} color="#f2b89a" />
+                <Text style={styles.infoText}>
+                  Gerado com apoio de IA. Verifique sempre antes de consumir.
+                </Text>
+              </View>
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -116,7 +199,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
-    // Sombra leve
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
@@ -143,10 +225,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#00000014',
     overflow: 'hidden',
+    position: 'relative', // Importante para o overlay
   },
   analyzedImage: {
     width: '100%',
     height: '100%',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bottomPanel: {
     flex: 1,
@@ -156,12 +245,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 32,
-    // Sombra para dar profundidade ao painel
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.08,
     shadowRadius: 18,
     elevation: 10,
+    minHeight: 300, 
   },
   dragHandle: {
     width: 44,
@@ -170,6 +259,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1eceb',
     alignSelf: 'center',
     marginBottom: 16,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    color: '#9b8f9e',
+    fontSize: 14,
   },
   titleRow: {
     flexDirection: 'row',
@@ -193,7 +291,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   badge: {
-    backgroundColor: '#dff3e1',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -201,7 +298,6 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#1b6a3a',
   },
   descriptionText: {
     fontSize: 15,
