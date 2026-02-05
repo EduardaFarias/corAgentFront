@@ -10,12 +10,12 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Camera, ImagePlusIcon, ChartColumn } from 'lucide-react-native';
+import { ArrowLeft, Camera, ImagePlusIcon, ChartColumn, ShoppingBag } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
-const CameraAgenteDataScreen = () => {
+const CameraAgenteCosmeticsScreen = () => {
   const router = useRouter();
 
   return (
@@ -39,19 +39,19 @@ const CameraAgenteDataScreen = () => {
       >
         {/* Icon Badge */}
         <View style={styles.iconBadge}>
-          <ChartColumn size={40} color="#33283e" />
+          <ShoppingBag size={40} color="#33283e" />
         </View>
 
         {/* Title & Description */}
-        <Text style={styles.title}>Data Acessibility</Text>
+        <Text style={styles.title}>Cosméticos</Text>
         <Text style={styles.description}>
-          Converte Gráficos coloridos em versões acessíveis, com rótulos e resumos textuais 
+          Avalia a correspondência ideal entre tons de base e sombras para diferentes tipos de pele 
         </Text>
 
         {/* Main Illustration Card */}
         <View style={styles.card}>
           <Image
-           source={require("../../assets/images/graph.png")}
+           source={require("../../assets/images/cosmetics.png")}
             style={styles.illustration}
             resizeMode="contain"
           />
@@ -176,4 +176,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CameraAgenteDataScreen;
+export default CameraAgenteCosmeticsScreen;
