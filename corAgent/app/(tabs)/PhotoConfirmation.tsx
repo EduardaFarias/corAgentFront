@@ -16,11 +16,23 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const PhotoConfirmation = () => {
   const router = useRouter();
-  // Pega a imagem que veio da tela anterior (já recortada)
-  const { imageUri } = useLocalSearchParams();
+  // Pega a imagem que veio da tela anterior (já recortada), e o tipo de agente que vamos utilizar
+  const { imageUri, agentType } = useLocalSearchParams();
   
+  const currentAgent = Array.isArray(agentType) ? agentType[0] : agentType
   const finalUri = Array.isArray(imageUri) ? imageUri[0] : imageUri;
 
+  const handleConfirm = () => { 
+  if (currentAgent === 'basic') {
+    // Se for o agente básico, vai para a tela interativa
+    router.push({
+      pathname: '/ResultBasic', // Nome do arquivo que criamos acima
+      params: { imageUri: finalUri }
+    });
+  } else {
+    console.log("Vai ser outro agente");
+  }
+};
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fdfcf8" />
@@ -60,7 +72,7 @@ const PhotoConfirmation = () => {
         {/* Botão Positivo (Enviar) */}
         <TouchableOpacity 
           style={[styles.btn, styles.btnPositive]} 
-          onPress={() => console.log('Enviado para análise:', finalUri)}
+          onPress={handleConfirm}
           activeOpacity={0.8}
         >
           <Check size={24} color="#3a3055" strokeWidth={3} />

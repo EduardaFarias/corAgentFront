@@ -1,7 +1,9 @@
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 
-export const useImagePicker = () => {
+export type AgentType = 'basic' | 'food' | 'stylist' | 'data' | 'cosmetics';
+
+export const useImagePicker = (agentType:AgentType) => {
   const router = useRouter();
 
   // Função genérica para processar o resultado
@@ -9,7 +11,9 @@ export const useImagePicker = () => {
     if (!result.canceled && result.assets && result.assets.length > 0) {
       router.push({
         pathname: '/PhotoConfirmation',
-        params: { imageUri: result.assets[0].uri }
+        params: { imageUri: result.assets[0].uri,
+            agentType: agentType
+         }
       });
     }
   };

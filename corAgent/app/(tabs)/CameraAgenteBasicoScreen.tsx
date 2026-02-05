@@ -18,7 +18,7 @@ const { width } = Dimensions.get('window');
 
 const CameraAgenteBasicoScreen = () => {
   const router = useRouter();
-  const {takePhoto, pickImage} = useImagePicker(); // Chamando o hook aqui
+  const {takePhoto, pickImage} = useImagePicker('basic'); // Chamando o hook aqui
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
