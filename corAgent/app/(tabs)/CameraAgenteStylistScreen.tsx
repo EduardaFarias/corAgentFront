@@ -10,12 +10,12 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Apple, Camera, ImagePlusIcon } from 'lucide-react-native';
+import { ArrowLeft, Eye, Camera, ImagePlusIcon, Shirt } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
-const AgenteAlimentarScreen = () => {
+const CameraAgenteStylistScreen = () => {
   const router = useRouter();
 
   return (
@@ -39,19 +39,19 @@ const AgenteAlimentarScreen = () => {
       >
         {/* Icon Badge */}
         <View style={styles.iconBadge}>
-          <Apple size={40} color="#33283e" />
+          <Shirt size={40} color="#33283e" />
         </View>
 
         {/* Title & Description */}
-        <Text style={styles.title}>Agente Alimentar</Text>
+        <Text style={styles.title}>Personal Stylist</Text>
         <Text style={styles.description}>
-          Identifique se frutas e alimentos estão maduros ou seguros para consumo
+          Auxilia na escolha de roupas, sugerindo combinações 
         </Text>
 
         {/* Main Illustration Card */}
         <View style={styles.card}>
           <Image
-           source={require("../../assets/images/food-apple.png")}
+           source={require("../../assets/images/stylist.png")}
             style={styles.illustration}
             resizeMode="contain"
           />
@@ -176,4 +176,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AgenteAlimentarScreen;
+export default CameraAgenteStylistScreen;
