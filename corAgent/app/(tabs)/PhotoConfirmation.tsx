@@ -9,13 +9,17 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Crop, Trash2, Check } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { Trash2, Check } from 'lucide-react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const PhotoConfirmation = () => {
   const router = useRouter();
+  // Pega a imagem que veio da tela anterior (já recortada)
+  const { imageUri } = useLocalSearchParams();
+  
+  const finalUri = Array.isArray(imageUri) ? imageUri[0] : imageUri;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,25 +30,18 @@ const PhotoConfirmation = () => {
         <Text style={styles.headerTitle}>A imagem está nítida?</Text>
       </View>
 
-      {/* Área Central: Preview */}
+      {/* Área Central: Preview Limpo */}
       <View style={styles.previewArea}>
         <View style={styles.imageContainer}>
           <Image
             source={{ 
-              uri: 'https://storage.googleapis.com/banani-generated-images/generated-images/9d939780-1968-4005-93ca-532f506b1c19.jpg' 
+              uri: finalUri || 'https://via.placeholder.com/400' 
             }}
             style={styles.previewImage}
+            // "cover" garante que a imagem preencha todo o espaço sem distorcer
             resizeMode="cover"
           />
-          
-          {/* Ícone de Ajuste (Overlay) */}
-          <TouchableOpacity 
-            style={styles.editOverlay} 
-            activeOpacity={0.8}
-            onPress={() => console.log('Abrir Crop')}
-          >
-            <Crop size={32} color="white" />
-          </TouchableOpacity>
+          {/* NENHUM ÍCONE AQUI EM CIMA */}
         </View>
       </View>
 
@@ -63,11 +60,11 @@ const PhotoConfirmation = () => {
         {/* Botão Positivo (Enviar) */}
         <TouchableOpacity 
           style={[styles.btn, styles.btnPositive]} 
-          onPress={() => console.log('Enviado para análise')}
+          onPress={() => console.log('Enviado para análise:', finalUri)}
           activeOpacity={0.8}
         >
           <Check size={24} color="#3a3055" strokeWidth={3} />
-          <Text style={styles.btnTextPositive}>Enviar para análise</Text>
+          <Text style={styles.btnTextPositive}>Enviar p/ Análise</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -104,7 +101,7 @@ const styles = StyleSheet.create({
     height: '100%',
     maxHeight: SCREEN_HEIGHT * 0.6,
     borderRadius: 24,
-    overflow: 'hidden',
+    overflow: 'hidden', // Isso garante que os cantos arredondados funcionem
     backgroundColor: '#f1eceb',
     // Sombra iOS
     shadowColor: '#000',
@@ -113,26 +110,10 @@ const styles = StyleSheet.create({
     shadowRadius: 30,
     // Sombra Android
     elevation: 8,
-    position: 'relative',
   },
   previewImage: {
     width: '100%',
     height: '100%',
-  },
-  editOverlay: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -32, // Metade do height
-    marginLeft: -32, // Metade do width
-    backgroundColor: 'rgba(58, 48, 85, 0.4)',
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   footer: {
     backgroundColor: '#3a3055',

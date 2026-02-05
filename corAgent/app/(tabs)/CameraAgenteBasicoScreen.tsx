@@ -12,11 +12,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Eye, Camera, ImagePlusIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useImagePicker } from '@/hooks/useImagePicker';
 
 const { width } = Dimensions.get('window');
 
 const CameraAgenteBasicoScreen = () => {
   const router = useRouter();
+  const {takePhoto, pickImage} = useImagePicker(); // Chamando o hook aqui
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -63,7 +65,7 @@ const CameraAgenteBasicoScreen = () => {
         <TouchableOpacity 
           style={styles.actionButton}
           activeOpacity={0.9}
-          onPress={() => console.log('Abrir Câmera')}
+          onPress={takePhoto}
         >
           <Camera size={24} color="#ffffff" />
           <Text style={styles.actionButtonText}>Tirar Foto</Text>
@@ -74,7 +76,7 @@ const CameraAgenteBasicoScreen = () => {
         <TouchableOpacity 
           style={styles.actionButton}
           activeOpacity={0.9}
-          onPress={() => console.log('Abrir Câmera')}
+          onPress={pickImage}
         >
           <ImagePlusIcon size={24} color="#ffffff" />
           <Text style={styles.actionButtonText}>Enviar Foto</Text>
