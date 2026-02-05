@@ -10,7 +10,8 @@ import {
   HomeIcon,
   Shirt,
   ShoppingBag,
-  User
+  User,
+  Camera
 } from 'lucide-react-native';
 import React from 'react';
 import {
@@ -104,7 +105,23 @@ const Home = () => {
         <View style={styles.bottomNav}>
           <NavItem icon={<HomeIcon size={24} />} label="Início" active />
           <NavItem icon={<History size={24} />} label="Histórico" />
-          <NavItem icon={<User size={24} />} label="Perfil" />
+          <NavItem 
+  icon={
+    // 1. Criamos uma "caixa" invisível do mesmo tamanho do ícone (24)
+    <View style={{ width: 24, alignItems: 'center', justifyContent: 'center' }}>
+      
+      {/* 2. Movemos SÓ o ícone para a esquerda usando margin negativa ou relative */}
+      <Camera 
+        size={24} 
+        style={{ 
+          position: 'relative', 
+          left: -7  // <--- Ajuste este número. Como está relativo, ele não corta fácil.
+        }} 
+      />
+    </View>
+  } 
+  label=" Câmera    corAgent" 
+/>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
